@@ -1,7 +1,7 @@
 package WWW::Scramble;
-
-use warnings;
-use strict;
+use Moose;
+use WWW::Mechanize;
+use HTML::TreeBuilder::XPath;
 
 =head1 NAME
 
@@ -15,6 +15,8 @@ Version 0.01
 
 our $VERSION = '0.01';
 
+has xpath => ( is => 'ro', isa => 'HTML::TreeBuilder::XPath', default => sub { HTML::TreeBuilder::XPath->new } );
+has mech => ( is => 'ro', isa => 'WWW::Mechanize', default => sub { WWW::Mechanize->new } );
 
 =head1 SYNOPSIS
 
@@ -34,18 +36,18 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =head1 FUNCTIONS
 
-=head2 function1
+=head2 fetch
 
 =cut
 
-sub function1 {
-}
-
-=head2 function2
-
-=cut
-
-sub function2 {
+sub fetch {
+    my ($self, $url) = @_;
+    $self->mech->get($url);
+    return $self->mech->response->status_line
+        unless $self->mech->success;
+    use WWW::Scramble::Entry;
+    my $entry = WWW::Scramble::Entry->new ( uri => $self->mech->uri, rawdata => $self->mech->content, _xpath => $self->xpath );
+    return $entry;
 }
 
 =head1 AUTHOR
@@ -104,4 +106,6 @@ under the same terms as Perl itself.
 
 =cut
 
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1; # End of WWW::Scramble

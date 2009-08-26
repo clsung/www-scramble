@@ -3,6 +3,8 @@ MANIFEST
 Makefile.PL
 README
 lib/WWW/Scramble.pm
+lib/WWW/Scramble/Entry.pm
 t/00-load.t
+t/04-yahoo-tw-news.t
 t/pod-coverage.t
 t/pod.t

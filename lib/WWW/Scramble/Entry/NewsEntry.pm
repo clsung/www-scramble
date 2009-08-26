@@ -1,11 +1,9 @@
-package NewsEntry.pm
-
+package WWW::Scramble::NewsEntry.pm
 use Moose;
-use Moose::Util::TypeConstraints;
 
 =head1 NAME
 
-WWW::Scramble::Entry 
+WWW::Scramble::NewsEntry 
 
 =head1 SYNOPSIS
 
