@@ -4,7 +4,9 @@ Makefile.PL
 README
 lib/WWW/Scramble.pm
 lib/WWW/Scramble/Entry.pm
+lib/WWW/Scramble/Entry/NewsEntry.pm
 lib/WWW/Scramble/Handler.pm
+lib/WWW/Scramble/Handler/News.pm
 t/00-load.t
 t/04-yahoo-tw-news.t
 t/pod-coverage.t

@@ -1,7 +1,8 @@
 package WWW::Scramble;
 use Moose;
+use WWW::Scramble::Entry;
+use WWW::Scramble::Entry::NewsEntry;
 use WWW::Mechanize;
-use HTML::TreeBuilder::XPath;
 
 =head1 NAME
 
@@ -15,7 +16,6 @@ Version 0.01
 
 our $VERSION = '0.01';
 
-has xpath => ( is => 'ro', isa => 'HTML::TreeBuilder::XPath', default => sub { HTML::TreeBuilder::XPath->new } );
 has mech => ( is => 'ro', isa => 'WWW::Mechanize', default => sub { WWW::Mechanize->new } );
 
 =head1 SYNOPSIS
@@ -45,11 +45,20 @@ sub fetch {
     $self->mech->get($url);
     return $self->mech->response->status_line
         unless $self->mech->success;
-    use WWW::Scramble::Entry;
-    my $entry = WWW::Scramble::Entry->new ( uri => $self->mech->uri, rawdata => $self->mech->content, _xpath => $self->xpath );
-    return $entry;
+    return WWW::Scramble::Entry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content );
 }
 
+=head2 fetchnews
+
+=cut
+
+sub fetchnews {
+    my ($self, $url) = @_;
+    $self->mech->get($url);
+    return $self->mech->response->status_line
+        unless $self->mech->success;
+    return WWW::Scramble::Entry::NewsEntry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content );
+}
 =head1 AUTHOR
 
 Cheng-Lung Sung, C<< <clsung at cpan.org> >>

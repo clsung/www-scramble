@@ -1,6 +1,5 @@
 package WWW::Scramble::Entry;
 use URI;
-use HTML::TreeBuilder::XPath;
 use WWW::Scramble::Handler;
 use Carp;
 use Moose;
@@ -17,12 +16,9 @@ Quick summary of what the module does.
 
 has title => (is => 'rw', isa => 'Str');
 has content => (is => 'rw', isa => 'Str');
-has rawdata => (is => 'ro', isa => 'Str');
+has _rawdata => ( is => 'rw', isa => 'Str' );
 has _handler => (
     is => 'ro', isa => 'WWW::Scramble::Handler', default => sub { WWW::Scramble::Handler->new }
-);
-has _xpath => (
-    is => 'ro', isa => 'HTML::TreeBuilder::XPath'
 );
 has URI => (
     is => 'rw', isa => 'URI',
@@ -35,9 +31,9 @@ has URI => (
 
 sub BUILD {
     my $self = shift;
-    $self->_xpath->parse_content($self->rawdata) || croak "Parse error";
-    $self->title ($self->_xpath->findvalue($self->_handler->xtitle));
-    $self->content ($self->_xpath->findvalue($self->_handler->xcontent));
+    $self->_handler->parse($self->_rawdata);
+    $self->title ($self->_handler->get_title);
+    $self->content ($self->_handler->get_content);
 }
 
 no Moose;
