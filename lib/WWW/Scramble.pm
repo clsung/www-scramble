@@ -45,20 +45,8 @@ if you don't export anything, such as for a purely object-oriented module.
 =cut
 
 sub fetch {
-    my ($self, $url) = @_;
+    my ($self, $url, $attr_ref) = @_;
     $self->mech->get($url);
-    return $self->mech->response->status_line
-        unless $self->mech->success;
-    return WWW::Scramble::Entry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content, _handler => $self->handler );
-}
-
-=head2 fetchfile
-
-=cut
-
-sub fetchfile {
-    my ($self, $file, $attr_ref) = @_;
-    $self->mech->get('file://'.$file);
     return $self->mech->response->status_line
         unless $self->mech->success;
     my %attr;
@@ -69,15 +57,30 @@ sub fetchfile {
     return WWW::Scramble::Entry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content, _handler => $self->handler );
 }
 
+=head2 fetchfile
+
+=cut
+
+sub fetchfile {
+    my ($self, $file, $attr_ref) = @_;
+    $file = 'file://'.$file unless ($file =~ m!^file://!);
+    return $self->fetch($file, $attr_ref);
+}
+
 =head2 fetchnews
 
 =cut
 
 sub fetchnews {
-    my ($self, $url) = @_;
+    my ($self, $url, $attr_ref) = @_;
     $self->mech->get($url);
     return $self->mech->response->status_line
         unless $self->mech->success;
+    my %attr;
+    %attr = %{$attr_ref} if ref $attr_ref eq 'HASH';
+    for my $key (keys %attr) {
+        $self->handler->set_asset($key, $attr{$key});
+    }
     return WWW::Scramble::Entry::NewsEntry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content, _handler => $self->handler );
 }
 =head1 AUTHOR
