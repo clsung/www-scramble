@@ -1,8 +1,9 @@
 package WWW::Scramble::Entry;
+use Moose;
 use URI;
 use WWW::Scramble::Handler;
 use Carp;
-use Moose;
+use HTML::FormatText;
 
 =head1 NAME
 
@@ -14,8 +15,8 @@ Quick summary of what the module does.
 
 =cut
 
-has title => (is => 'rw', isa => 'Str');
-has content => (is => 'rw', isa => 'Str');
+has title => (is => 'rw', isa => 'HTML::Element');
+has content => (is => 'rw', isa => 'HTML::Element');
 has _rawdata => ( is => 'rw', isa => 'Str' );
 has _handler => (
     is => 'ro', isa => 'WWW::Scramble::Handler', required => 1

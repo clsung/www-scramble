@@ -58,8 +58,7 @@ sub fetch {
 
 sub fetchfile {
     my ($self, $file, $attr_ref) = @_;
-    use Data::Dumper;
-    warn Dumper $self->mech->get('file://'.$file);
+    $self->mech->get('file://'.$file);
     return $self->mech->response->status_line
         unless $self->mech->success;
     my %attr;

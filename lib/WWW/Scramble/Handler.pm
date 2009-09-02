@@ -59,7 +59,7 @@ after 'set_asset' => sub {
 
 sub get_title {
     my ($self) = shift;
-    return $self->_xpath->findvalue( $self->xtitle );
+    return $self->_xpath->findnodes($self->xtitle );
 }
 
 =head2 get_content
@@ -68,7 +68,7 @@ sub get_title {
 
 sub get_content {
     my ($self) = shift;
-    return $self->_xpath->findvalue( $self->xcontent );
+    return $self->_xpath->findnodes($self->xcontent );
 }
 
 no Moose;
