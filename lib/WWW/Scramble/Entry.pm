@@ -18,7 +18,7 @@ has title => (is => 'rw', isa => 'Str');
 has content => (is => 'rw', isa => 'Str');
 has _rawdata => ( is => 'rw', isa => 'Str' );
 has _handler => (
-    is => 'ro', isa => 'WWW::Scramble::Handler', default => sub { WWW::Scramble::Handler->new }
+    is => 'ro', isa => 'WWW::Scramble::Handler', required => 1
 );
 has URI => (
     is => 'rw', isa => 'URI',

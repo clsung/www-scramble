@@ -1,5 +1,6 @@
 package WWW::Scramble::Handler;
 use Moose;
+use MooseX::AttributeHelpers;
 use Carp;
 use HTML::TreeBuilder::XPath;
 
@@ -22,6 +23,17 @@ has xtitle =>
   ( is => 'rw', isa => 'Str', default => '//div[@id="ynwsart"]/*/h1' );
 has xcontent =>
   ( is => 'rw', isa => 'Str', default => '//div[@id="ynwsartcontent"]' );
+has assets => (
+    metaclass => 'Collection::Hash',
+    is        => 'rw',
+    isa       => 'HashRef[Str]',
+    default   => sub { {} },
+    provides  => {
+        exists    => 'exists_in_asset',
+        get    => 'get_asset',
+        set    => 'set_asset',
+    }
+);
 
 =head1 FUNCTIONS
 
@@ -30,10 +42,16 @@ has xcontent =>
 =cut
 
 sub parse {
-    my ($self, $raw) = @_;
+    my ( $self, $raw ) = @_;
     croak "Empty Content" unless $raw;
     $self->_xpath->parse_content($raw) || croak "Parse error";
 }
+
+after 'set_asset' => sub {
+    my ( $self ) = shift;
+    $self->xtitle($self->get_asset('xtitle')) if ( $self->exists_in_asset('xtitle') );
+    $self->xcontent($self->get_asset('xcontent')) if ( $self->exists_in_asset('xcontent') );
+};
 
 =head2 get_title
 
@@ -41,7 +59,7 @@ sub parse {
 
 sub get_title {
     my ($self) = shift;
-    return $self->_xpath->findvalue($self->xtitle);
+    return $self->_xpath->findvalue( $self->xtitle );
 }
 
 =head2 get_content
@@ -50,7 +68,7 @@ sub get_title {
 
 sub get_content {
     my ($self) = shift;
-    return $self->_xpath->findvalue($self->xcontent);
+    return $self->_xpath->findvalue( $self->xcontent );
 }
 
 no Moose;

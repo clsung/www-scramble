@@ -1,6 +1,6 @@
 #!perl -T
 use utf8;
-use Test::More tests => 4;
+use Test::More skip_all => "network"; #tests => 4;
 use WWW::Scramble;
 
 BEGIN {

@@ -1,6 +1,7 @@
 package WWW::Scramble;
 use Moose;
 use WWW::Scramble::Entry;
+use WWW::Scramble::Handler;
 use WWW::Scramble::Entry::NewsEntry;
 use WWW::Mechanize;
 
@@ -17,6 +18,9 @@ Version 0.01
 our $VERSION = '0.01';
 
 has mech => ( is => 'ro', isa => 'WWW::Mechanize', default => sub { WWW::Mechanize->new } );
+has handler => (
+    is => 'rw', isa => 'WWW::Scramble::Handler', default => sub { WWW::Scramble::Handler->new }
+);
 
 =head1 SYNOPSIS
 
@@ -45,7 +49,25 @@ sub fetch {
     $self->mech->get($url);
     return $self->mech->response->status_line
         unless $self->mech->success;
-    return WWW::Scramble::Entry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content );
+    return WWW::Scramble::Entry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content, _handler => $self->handler );
+}
+
+=head2 fetchfile
+
+=cut
+
+sub fetchfile {
+    my ($self, $file, $attr_ref) = @_;
+    use Data::Dumper;
+    warn Dumper $self->mech->get('file://'.$file);
+    return $self->mech->response->status_line
+        unless $self->mech->success;
+    my %attr;
+    %attr = %{$attr_ref} if ref $attr_ref eq 'HASH';
+    for my $key (keys %attr) {
+        $self->handler->set_asset($key, $attr{$key});
+    }
+    return WWW::Scramble::Entry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content, _handler => $self->handler );
 }
 
 =head2 fetchnews
@@ -57,7 +79,7 @@ sub fetchnews {
     $self->mech->get($url);
     return $self->mech->response->status_line
         unless $self->mech->success;
-    return WWW::Scramble::Entry::NewsEntry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content );
+    return WWW::Scramble::Entry::NewsEntry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content, _handler => $self->handler );
 }
 =head1 AUTHOR
 
