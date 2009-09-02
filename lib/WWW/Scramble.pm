@@ -40,11 +40,11 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =head1 FUNCTIONS
 
-=head2 fetch
+=head2 _fetch
 
-=cut
+=cut 
 
-sub fetch {
+sub _fetch {
     my ($self, $url, $attr_ref) = @_;
     $self->mech->get($url);
     return $self->mech->response->status_line
@@ -54,6 +54,15 @@ sub fetch {
     for my $key (keys %attr) {
         $self->handler->set_asset($key, $attr{$key});
     }
+}
+
+=head2 fetch
+
+=cut
+
+sub fetch {
+    my $self = shift;
+    $self->_fetch(@_);
     return WWW::Scramble::Entry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content, _handler => $self->handler );
 }
 
@@ -72,17 +81,11 @@ sub fetchfile {
 =cut
 
 sub fetchnews {
-    my ($self, $url, $attr_ref) = @_;
-    $self->mech->get($url);
-    return $self->mech->response->status_line
-        unless $self->mech->success;
-    my %attr;
-    %attr = %{$attr_ref} if ref $attr_ref eq 'HASH';
-    for my $key (keys %attr) {
-        $self->handler->set_asset($key, $attr{$key});
-    }
+    my $self = shift;
+    $self->_fetch(@_);
     return WWW::Scramble::Entry::NewsEntry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content, _handler => $self->handler );
 }
+
 =head1 AUTHOR
 
 Cheng-Lung Sung, C<< <clsung at cpan.org> >>
