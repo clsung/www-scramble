@@ -2,8 +2,9 @@ package WWW::Scramble;
 use Moose;
 use WWW::Scramble::Entry;
 use WWW::Scramble::Handler;
-use WWW::Scramble::Entry::NewsEntry;
 use WWW::Mechanize;
+use File::Find::Rule;
+use YAML;
 
 =head1 NAME
 
@@ -21,6 +22,7 @@ has mech => ( is => 'ro', isa => 'WWW::Mechanize', default => sub { WWW::Mechani
 has handler => (
     is => 'rw', isa => 'WWW::Scramble::Handler', default => sub { WWW::Scramble::Handler->new }
 );
+has assets => ( is => 'rw', isa => 'HashRef[Str]', default => sub { {} } );
 
 =head1 SYNOPSIS
 
@@ -31,12 +33,10 @@ Perhaps a little code snippet.
     use WWW::Scramble;
 
     my $foo = WWW::Scramble->new();
+    my $e1 = $foo->fetchfile('a.html', { xtitle => '//title', xcontent => '//body' });
+    my $e2 = $foo->fetchnews('http://foo.bar.com/foobar.html');
+    print $e1->title->as_trimmed_text
     ...
-
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
 
 =head1 FUNCTIONS
 
@@ -83,8 +83,27 @@ sub fetchfile {
 sub fetchnews {
     my $self = shift;
     $self->_fetch(@_);
-    return WWW::Scramble::Entry::NewsEntry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content, _handler => $self->handler );
+    return WWW::Scramble::Entry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content, _handler => $self->handler );
 }
+
+sub loadassets {
+    my($self, $assetsdir) = @_;
+
+    my $rule = File::Find::Rule->new;
+    $rule->name("*.yaml");
+    for my $file ($rule->in($assetsdir)) {
+        my $base = File::Basename::basename($file);
+        my @data = YAML::LoadFile($file);
+
+        $self->assets->{$base} = \@data;
+    }
+}
+
+after 'handler' => sub {
+    my $self = shift;
+    $self->loadassets("./");
+};
+
 
 =head1 AUTHOR
 
