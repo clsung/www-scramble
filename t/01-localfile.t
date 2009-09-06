@@ -19,7 +19,6 @@ my %attr = (
     xtitle => '//td[@class="gensmall"]',
     xcontent => '//div[@class="postbody"]',
 );
-my $f = HTML::FormatText->new(leftmargin => 0);
 my $entry = $scrab->fetchfile($fh->filename, \%attr);
 isa_ok ( $entry , 'WWW::Scramble::Entry' );
 is ($entry->title->as_trimmed_text, 'Topic: I am title', 'Check title');
