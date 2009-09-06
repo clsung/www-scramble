@@ -2,8 +2,7 @@ package WWW::Scramble::Entry;
 use Moose;
 use URI;
 use WWW::Scramble::Handler;
-use Carp;
-use HTML::FormatText;
+use HTML::Element;
 
 =head1 NAME
 
