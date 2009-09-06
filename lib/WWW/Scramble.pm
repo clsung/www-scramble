@@ -12,17 +12,22 @@ WWW::Scramble - The great new WWW::Scramble!
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 has mech => ( is => 'ro', isa => 'WWW::Mechanize', default => sub { WWW::Mechanize->new } );
 has handler => (
     is => 'rw', isa => 'WWW::Scramble::Handler', default => sub { WWW::Scramble::Handler->new }
 );
 has assets => ( is => 'rw', isa => 'HashRef[Str]', default => sub { {} } );
+
+sub BUILD {
+    my $self = shift;
+    $self->loadassets("./");
+};
 
 =head1 SYNOPSIS
 
@@ -50,7 +55,16 @@ sub _fetch {
     return $self->mech->response->status_line
         unless $self->mech->success;
     my %attr;
-    %attr = %{$attr_ref} if ref $attr_ref eq 'HASH';
+    if ($attr_ref and ref $attr_ref eq 'HASH') {
+        %attr = %{$attr_ref};
+    } else { # no specified hash, so...
+        my %h = %{$self->assets};
+        for my $key (keys %h) {
+            my $handle = delete $h{$key}->[0]->{handle};
+            next unless $handle and $url =~ m/$handle/;
+            %attr = %{$h{$key}->[0]};
+        }
+    };
     for my $key (keys %attr) {
         $self->handler->set_asset($key, $attr{$key});
     }
@@ -98,11 +112,6 @@ sub loadassets {
         $self->assets->{$base} = \@data;
     }
 }
-
-after 'handler' => sub {
-    my $self = shift;
-    $self->loadassets("./");
-};
 
 
 =head1 AUTHOR
