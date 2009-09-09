@@ -1,5 +1,8 @@
 Revision history for WWW-Scramble
 
+0.02    Wed Sep  9 13:50:51 CST 2009
+        Use YAML to manage assets
+
 0.01    Wed Sep  2 16:52:52 CST 2009
         Initial release.
 
