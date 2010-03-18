@@ -24,11 +24,6 @@ has handler => (
 );
 has assets => ( is => 'rw', isa => 'HashRef[Str]', default => sub { {} } );
 
-sub BUILD {
-    my $self = shift;
-    $self->loadassets("./");
-};
-
 =head1 SYNOPSIS
 
 Quick summary of what the module does.
@@ -45,9 +40,12 @@ Perhaps a little code snippet.
 
 =head1 FUNCTIONS
 
-=head2 _fetch
-
 =cut 
+
+sub BUILD {
+    my $self = shift;
+    $self->loadassets("./");
+};
 
 sub _fetch {
     my ($self, $url, $attr_ref) = @_;
@@ -67,6 +65,19 @@ sub _fetch {
     };
     for my $key (keys %attr) {
         $self->handler->set_asset($key, $attr{$key});
+    }
+}
+
+sub loadassets {
+    my($self, $assetsdir) = @_;
+
+    my $rule = File::Find::Rule->new;
+    $rule->name("*.yaml");
+    for my $file ($rule->in($assetsdir)) {
+        my $base = File::Basename::basename($file);
+        my @data = YAML::LoadFile($file);
+
+        $self->assets->{$base} = \@data;
     }
 }
 
@@ -98,19 +109,6 @@ sub fetchnews {
     my $self = shift;
     $self->_fetch(@_);
     return WWW::Scramble::Entry->new ( uri => $self->mech->uri, _rawdata => $self->mech->content, _handler => $self->handler );
-}
-
-sub loadassets {
-    my($self, $assetsdir) = @_;
-
-    my $rule = File::Find::Rule->new;
-    $rule->name("*.yaml");
-    for my $file ($rule->in($assetsdir)) {
-        my $base = File::Basename::basename($file);
-        my @data = YAML::LoadFile($file);
-
-        $self->assets->{$base} = \@data;
-    }
 }
 
 

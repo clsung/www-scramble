@@ -14,8 +14,8 @@ requires       'Moose';
 requires       'MooseX::AttributeHelpers';
 requires       'URI';
 requires       'WWW::Mechanize';
-requiers       'File::Find::Rule';
-requiers       'YAML';
+requires       'File::Find::Rule';
+requires       'YAML';
 
 auto_install;
 
