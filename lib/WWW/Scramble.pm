@@ -12,11 +12,11 @@ WWW::Scramble - The great new WWW::Scramble!
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 has mech => ( is => 'ro', isa => 'WWW::Mechanize', default => sub { WWW::Mechanize->new } );
 has handler => (
@@ -41,6 +41,10 @@ Perhaps a little code snippet.
 =head1 FUNCTIONS
 
 =cut 
+
+=head2 BUILD
+
+=cut
 
 sub BUILD {
     my $self = shift;
@@ -67,6 +71,10 @@ sub _fetch {
         $self->handler->set_asset($key, $attr{$key});
     }
 }
+
+=head2 loadassets
+
+=cut
 
 sub loadassets {
     my($self, $assetsdir) = @_;
