@@ -36,6 +36,11 @@ sub BUILD {
     $self->content ($self->_handler->get_content);
 }
 
+sub get_field {
+    my ($self) = shift;
+    return $self->_handler->get_field(@_);
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;

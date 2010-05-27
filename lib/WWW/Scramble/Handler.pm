@@ -71,6 +71,17 @@ sub get_content {
     return $self->_xpath->findnodes($self->xcontent );
 }
 
+=head2 get_field
+
+=cut
+
+sub get_field {
+    my ($self, $field, $node) = @_;
+    return $node->findnodes($self->get_asset($field))
+        if $node and 'HTML::Element' eq ref $node ;
+    return $self->_xpath->findnodes($self->get_asset($field));
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
