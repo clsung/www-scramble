@@ -2,6 +2,7 @@ Revision history for WWW-Scramble
 
 0.04    Thu May 27 15:51:16 CST 2010
         add get_field(<field specified in YAML file>)
+        add scripts/scramble.pl
 
 0.03    Tue Apr 27 15:31:00 CST 2010
         Update dependency
